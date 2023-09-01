@@ -1,5 +1,6 @@
 package kaz.dev.weatherapp.data
 
+import kaz.dev.weatherapp.utils.BASE_URL
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
@@ -7,10 +8,11 @@ import retrofit2.converter.gson.GsonConverterFactory
 import java.util.concurrent.TimeUnit
 
 object ApiService {
-    private val BASE_URL = "http://api.weatherapi.com/v1/"
     private val api: EndPointApi
 
     val loggingInterceptor: HttpLoggingInterceptor = HttpLoggingInterceptor()
+
+    val weatherApiService: WeatherApiService
 
     init {
         loggingInterceptor.setLevel(HttpLoggingInterceptor.Level.BODY)
@@ -31,6 +33,6 @@ object ApiService {
             .addConverterFactory(GsonConverterFactory.create())
             .build()
             .create(EndPointApi::class.java)
-        okHttpClient.hostnameVerifier
+        weatherApiService = WeatherApiService(api)
     }
 }

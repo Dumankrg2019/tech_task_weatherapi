@@ -7,7 +7,7 @@
 
     <fragment
         android:id="@+id/weatherFragment"
-        android:name="kaz.dev.weatherapp.presentation.WeatherScreenFragment"
+        android:name="kaz.dev.weatherapp.presentation.main_screen.WeatherScreenFragment"
         android:label="fragment_weather"
         tools:layout="@layout/fragment_weather_screen" />
 
