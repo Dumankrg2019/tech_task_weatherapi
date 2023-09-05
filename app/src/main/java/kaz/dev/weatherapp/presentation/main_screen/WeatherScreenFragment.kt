@@ -44,19 +44,34 @@ class WeatherScreenFragment : Fragment() {
 
         observeOn()
 
-        checkFieldAndGerQuery(binding.tvCityName)
+        checkFieldAndGetQuery(binding.etCityName)
     }
 
     private fun observeOn(){
         viewModel.fetchWeatherData(API_KEY, "Almaty", "no")
         viewModel.weatherData.observe(viewLifecycleOwner, {weatherInfo->
             weatherInfo?.let {
-                binding.tvWeather.text = it.toString()
+                binding.tvLocationCity.setText(it.location.name)
+                binding.tvLocationCountry.setText(it.location.country)
+                binding.tvTemperature.setText("${it.current.temp_c}°C")
+            }
+        })
+        viewModel.loading.observe(viewLifecycleOwner, {isLoading->
+            isLoading?.let{
+                binding.progressBar.visibility =if(it) View.VISIBLE else View.GONE
+            }
+        })
+
+        viewModel.errorStatus.observe(viewLifecycleOwner, {isErrorStatus->
+            isErrorStatus?.let {
+                if(it == true) {
+                    inflateTextValueWhenErrorStatus()
+                }
             }
         })
     }
 
-    private fun checkFieldAndGerQuery(editText: EditText) {
+    private fun checkFieldAndGetQuery(editText: EditText) {
         val delay = 300L
         val handler = Handler(Looper.getMainLooper())
         editText.addTextChangedListener(object: TextWatcher{
@@ -78,6 +93,12 @@ class WeatherScreenFragment : Fragment() {
             }
 
         })
+    }
+
+    private fun inflateTextValueWhenErrorStatus() {
+        binding.tvTemperature.text = "Value"
+        binding.tvLocationCity.text = "Location City"
+        binding.tvLocationCountry.text = "Location Country"
     }
 
     override fun onDestroyView() {
