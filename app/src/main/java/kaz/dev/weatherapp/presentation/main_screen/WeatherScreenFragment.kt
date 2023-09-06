@@ -13,9 +13,11 @@ import android.view.ViewGroup
 import android.widget.EditText
 import androidx.core.os.postDelayed
 import androidx.lifecycle.ViewModelProvider
+import androidx.recyclerview.widget.LinearLayoutManager
 import kaz.dev.weatherapp.R
 import kaz.dev.weatherapp.data.ApiService.weatherApiService
 import kaz.dev.weatherapp.databinding.FragmentWeatherScreenBinding
+import kaz.dev.weatherapp.presentation.main_screen.adapter.HistoryQueryAdapter
 import kaz.dev.weatherapp.utils.API_KEY
 
 
@@ -45,6 +47,19 @@ class WeatherScreenFragment : Fragment() {
         observeOn()
 
         checkFieldAndGetQuery(binding.etCityName)
+
+        val arrayOfQueries = arrayListOf<String>("gonzo", "amateur", "home", "hide camera", "primal", "family")
+        val queryHistoryAdapter = HistoryQueryAdapter(arrayOfQueries)
+
+        binding.rvHistoryOfQueries.apply {
+            adapter = queryHistoryAdapter
+            layoutManager = LinearLayoutManager(requireActivity())
+            this.setHasFixedSize(true)
+        }
+        binding.etCityName.setOnClickListener {
+            binding.rvHistoryOfQueries.visibility = View.VISIBLE
+        }
+
     }
 
     private fun observeOn(){
