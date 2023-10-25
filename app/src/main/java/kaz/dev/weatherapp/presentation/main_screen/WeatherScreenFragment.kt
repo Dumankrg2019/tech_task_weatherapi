@@ -1,21 +1,21 @@
 package kaz.dev.weatherapp.presentation.main_screen
 
+import android.graphics.Rect
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
 import android.text.Editable
 import android.text.TextWatcher
 import android.util.Log
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.ViewTreeObserver.OnGlobalLayoutListener
 import android.widget.EditText
-import androidx.core.os.postDelayed
+import android.widget.Toast
+import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
-import kaz.dev.weatherapp.R
-import kaz.dev.weatherapp.data.ApiService.weatherApiService
 import kaz.dev.weatherapp.databinding.FragmentWeatherScreenBinding
 import kaz.dev.weatherapp.presentation.main_screen.adapter.HistoryQueryAdapter
 import kaz.dev.weatherapp.utils.API_KEY
@@ -48,22 +48,43 @@ class WeatherScreenFragment : Fragment() {
 
         checkFieldAndGetQuery(binding.etCityName)
 
-        val arrayOfQueries = arrayListOf<String>("gonzo", "amateur", "home", "hide camera", "primal", "family")
-        val queryHistoryAdapter = HistoryQueryAdapter(arrayOfQueries)
+        //val arrayOfQueries = arrayListOf<String>("gonzo", "amateur", "home", "hide camera", "primal", "family")
 
-        binding.rvHistoryOfQueries.apply {
-            adapter = queryHistoryAdapter
-            layoutManager = LinearLayoutManager(requireActivity())
-            this.setHasFixedSize(true)
-        }
         binding.etCityName.setOnClickListener {
             binding.rvHistoryOfQueries.visibility = View.VISIBLE
+        }
+
+        binding.mainLayout.getViewTreeObserver().addOnGlobalLayoutListener {
+            val r = Rect()
+            binding.mainLayout.getWindowVisibleDisplayFrame(r)
+            val screenHeight: Int = binding.mainLayout.getRootView().getHeight()
+            val keypadHeight: Int = screenHeight - r.bottom
+            if (keypadHeight > screenHeight * 0.15) {
+//                Toast.makeText(requireActivity(), "Keyboard is showing", Toast.LENGTH_LONG)
+//                    .show()
+                Log.e("keyboard status", "Keyboard is showing")
+            } else {
+                //Toast.makeText(requireActivity(), "keyboard closed", Toast.LENGTH_LONG).show()
+                Log.e("keyboard status", "Keyboard is closed")
+            }
         }
 
     }
 
     private fun observeOn(){
         viewModel.fetchWeatherData(API_KEY, "Almaty", "no")
+        viewModel.listOfCities.observe(viewLifecycleOwner, {listOfCities->
+            listOfCities?.let {
+                Log.e("loc", "list of cities: ${it}")
+                val queryHistoryAdapter = HistoryQueryAdapter(it, viewModel.weatherData.value!!)
+
+                binding.rvHistoryOfQueries.apply {
+                    adapter = queryHistoryAdapter
+                    layoutManager = LinearLayoutManager(requireActivity())
+                    this.setHasFixedSize(true)
+                }
+            }
+        })
         viewModel.weatherData.observe(viewLifecycleOwner, {weatherInfo->
             weatherInfo?.let {
                 binding.tvLocationCity.setText(it.location.name)
@@ -103,6 +124,7 @@ class WeatherScreenFragment : Fragment() {
                               s.toString(),
                               "no"
                           )
+                      viewModel.fetchListOfCities(API_KEY,s.toString())
                   }
               }, delay)
             }

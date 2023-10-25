@@ -1,6 +1,7 @@
 package kaz.dev.weatherapp.data
 
 import kaz.dev.weatherapp.data.responses.city.GetWeatherInTheCity
+import kaz.dev.weatherapp.data.responses.list_of_cities.ListOfCities
 import kaz.dev.weatherapp.utils.API_KEY
 import retrofit2.Response
 import retrofit2.http.GET
@@ -17,4 +18,9 @@ interface EndPointApi {
                             @Query("q") location: String,
                             @Query("aqi") aqi: String
     ): Response<GetWeatherInTheCity>
+
+    @GET("search.json")
+    suspend fun getListOfCities(@Query("key") apiKey: String,
+                                    @Query("q") location: String
+    ): Response<ListOfCities>
 }

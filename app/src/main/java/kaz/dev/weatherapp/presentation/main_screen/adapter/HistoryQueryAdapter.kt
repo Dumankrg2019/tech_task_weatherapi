@@ -6,13 +6,18 @@ import android.view.ViewGroup
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import kaz.dev.weatherapp.R
+import kaz.dev.weatherapp.data.responses.city.GetWeatherInTheCity
+import kaz.dev.weatherapp.data.responses.list_of_cities.ListOfCities
+import kaz.dev.weatherapp.data.responses.list_of_cities.ListOfCitiesItem
 
 class HistoryQueryAdapter(
-    val historyQueryList: ArrayList<String>
+    val historyQueryList: ArrayList<ListOfCitiesItem>,
+    val temperatureOfCity: GetWeatherInTheCity
 ): RecyclerView.Adapter<HistoryQueryAdapter.HistoryQueryViewHolder>() {
 
     class HistoryQueryViewHolder(view: View):RecyclerView.ViewHolder(view) {
         val historyTitle = view.findViewById<TextView>(R.id.tvQueryTitle)
+        val temperatureOfCity = view.findViewById<TextView>(R.id.tvTemperatureValue)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int) = HistoryQueryViewHolder(
@@ -20,7 +25,8 @@ class HistoryQueryAdapter(
     )
 
     override fun onBindViewHolder(holder: HistoryQueryViewHolder, position: Int) {
-        holder.historyTitle.text = historyQueryList.get(position)
+        holder.historyTitle.text = historyQueryList.get(position).name
+        holder.temperatureOfCity.text = temperatureOfCity.current.temp_c.toString()
     }
 
     override fun getItemCount(): Int {
